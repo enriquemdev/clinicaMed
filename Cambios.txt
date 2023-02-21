@@ -1,0 +1,8 @@
+22/05/2022
+
+buscador Ajax
+
+controlador, list view y search view:
+-empleado
+-usuario
+-consulta

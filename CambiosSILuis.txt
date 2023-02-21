@@ -1,0 +1,4 @@
+vistasmodelo, familiarcontrolador, familiarmodelo, pacientecontrolador, pacientemodelo, gestiónpaciente vista,
+nuevas vistas de familiar de paciente, responsable controlador, responsable vista, paciente menor vista.
+
+Cambios BD: en tablafamiliares se eliminaron atributos, se creó relacionespersonafamiliar

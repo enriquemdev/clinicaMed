@@ -1,0 +1,2174 @@
+-- phpMyAdmin SQL Dump
+-- version 5.3.0-dev+20220501.46b7525c53
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 13-05-2022 a las 07:25:50
+-- Versión del servidor: 10.4.24-MariaDB
+-- Versión de PHP: 8.1.4
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `bdcleanfull`
+--
+CREATE DATABASE IF NOT EXISTS `bdcleanfull` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `bdcleanfull`;
+
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`root`@`localhost` PROCEDURE `increment_persona` (IN `id` INT)   BEGIN
+SET id=(SELECT COUNT(*) FROM tblpersona);
+	UPDATE tblpersona SET Codigo = id WHERE Codigo = 0;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerDatosEmpleado` (IN `idEmpleado` INT)   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+        SELECT  a.Codigo as CodigoEmpleado, a.INSS, a.CodPersona, b.Cedula, 
+        b.Nombres as NombresEmpleado, b.Apellidos as ApellidosEmpleado, 
+        b.Fecha_de_nacimiento, b.Telefono, b.Genero, b.Estado_civil, b.Direccion, b.Email
+		FROM tblempleado as a 
+        INNER JOIN tblpersona as b ON (a.CodPersona = b.Codigo)
+		where a.Codigo=idEmpleado;
+	COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerDatosEmpleados` ()   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+		#set @minimo=(SELECT MIN(Codigo) FROM tblempleado);
+        #set @maximo=(SELECT MAX(Codigo) FROM tblempleado);
+        SELECT  a.Codigo as CodigoEmpleado, a.INSS, a.CodPersona, b.Cedula, b.Nombres as NombresEmpleado,
+        b.Apellidos as ApellidosEmpleado, b.Fecha_de_nacimiento, b.Telefono, 
+        b.Genero, b.Estado_civil, b.Direccion, b.Email
+		FROM tblempleado as a 
+        INNER JOIN tblpersona as b ON (a.CodPersona = b.Codigo);
+        #ORDER BY a.Codigo ASC LIMIT (@minimo,@maximo);
+	COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerDatosExamen` (IN `idExamen` INT)   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+        SELECT a.Codigo AS CodigoExamen, a.RecetaPrevia,c.Nombres as NombresDoctor,
+		c.Apellidos as ApellidosDoctor,e.Nombres as NombresPaciente,e.Apellidos as ApellidosPaciente,
+		f.Nombre as NombreSalaMedica,a.FechaYHora  
+		FROM tblexamen as a
+		INNER JOIN tblempleado as b ON (a.EmpleadoRealizacion=b.Codigo)
+		INNER JOIN tblpersona as c ON (b.CodPersona=c.Codigo)
+		INNER JOIN tblpaciente as d ON (a.CodPaciente=d.CodigoP)
+		INNER JOIN tblpersona as e ON (d.CodPersona=e.Codigo)
+		INNER JOIN catsalaexamen as f ON (a.SalaMedica=f.ID)
+		where a.Codigo=idExamen;	
+	COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerDatosExamenes` ()   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+        SELECT a.Codigo AS CodigoExamen, a.RecetaPrevia,c.Nombres as NombresDoctor,
+		c.Apellidos as ApellidosDoctor,e.Nombres as NombresPaciente,e.Apellidos as ApellidosPaciente,
+		f.Nombre as NombreSalaMedica,a.FechaYHora  
+		FROM tblexamen as a
+		INNER JOIN tblempleado as b ON (a.EmpleadoRealizacion=b.Codigo)
+		INNER JOIN tblpersona as c ON (b.CodPersona=c.Codigo)
+		INNER JOIN tblpaciente as d ON (a.CodPaciente=d.CodigoP)
+		INNER JOIN tblpersona as e ON (d.CodPersona=e.Codigo)
+		INNER JOIN catsalaexamen as f ON (a.SalaMedica=f.ID);	
+	COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerDatosPaciente` (IN `idPaciente` INT)   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+        SELECT a.CodigoP, a.INSS,a.CodPersona, b.Nombres AS NombresPaciente, 
+        b.Apellidos as ApellidosPaciente, b.Fecha_de_nacimiento, a.CodExpediente, 
+        a.GrupoSanguineo, c.Nombre as NombreGrupoSanguineo
+		FROM tblpaciente as a
+		INNER JOIN tblpersona as b ON (a.CodPersona = b.Codigo) 
+        INNER JOIN catgruposanguineo as c ON (a.GrupoSanguineo=c.ID)
+		where a.CodigoP=idPaciente;
+	COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerDatosPacientes` ()   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+        SELECT a.CodigoP, a.INSS,a.CodPersona, b.Nombres AS NombresPaciente, 
+        b.Apellidos as ApellidosPaciente, b.Fecha_de_nacimiento, a.CodExpediente, 
+        a.GrupoSanguineo, c.Nombre as NombreGrupoSanguineo
+		FROM tblpaciente as a
+		INNER JOIN tblpersona as b ON (a.CodPersona = b.Codigo) 
+        INNER JOIN catgruposanguineo as c ON (a.GrupoSanguineo=c.ID);
+	COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerEspecialidadesEmpleado` (IN `idEmpleado` INT)   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+        SELECT  b.Nombres, b.Apellidos, d.Nombre as NombreEspecialidad,d.Descripcion
+		FROM tblempleado as a 
+        INNER JOIN tblpersona as b ON (a.CodPersona=b.Codigo) 
+        INNER JOIN tblespecialidad as c ON (c.CodDoctor=a.Codigo)
+        INNER JOIN catespecialidades as d ON (d.ID=c.IDEspecialidad)
+        WHERE a.Codigo=idEmpleado;
+	COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerFamiliaresPersona` (IN `idPersona` INT)   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+        SELECT  a.Nombres, a.Apellidos, a.Telefono,b.EsTutor,d.Nombre as Parentesco,a.Email
+		FROM tblpersona as a 
+        INNER JOIN tblfamiliares as b ON (b.CodPersona=a.Codigo)
+        INNER JOIN tblpersona as c ON (b.CodPersona=c.Codigo)
+        INNER JOIN catparentesco as d ON (b.Parentesco=d.ID)
+        WHERE b.FamiliarDe=idPersona;
+	COMMIT;
+END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ObtenerUltimoCargoActivoEmpleado` (IN `idEmpleado` INT)   BEGIN	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    BEGIN
+		SELECT 'An SQL exception has occurred' AS SQL_EXCEPTION ;
+        ROLLBACK;
+    END;
+	START TRANSACTION;
+         SELECT  b.Nombre as NombreCargo
+		FROM tblhistorialcargos as a 
+        INNER JOIN catcargos as b ON (a.IdCargo = b.ID)
+		where a.CodEmpleado=idEmpleado AND a.Estado=1
+        ORDER BY a.FechaAsignacion DESC;
+	COMMIT;
+END$$
+
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catcaja`
+--
+
+CREATE TABLE `catcaja` (
+  `idCaja` int(11) NOT NULL,
+  `nombreCaja` varchar(100) NOT NULL,
+  `Descripcion` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catcargos`
+--
+
+CREATE TABLE `catcargos` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(60) DEFAULT NULL,
+  `Descripcion` varchar(200) DEFAULT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catconsultorio`
+--
+
+CREATE TABLE `catconsultorio` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(60) DEFAULT NULL,
+  `Descripcion` varchar(200) DEFAULT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catenfermedades`
+--
+
+CREATE TABLE `catenfermedades` (
+  `ID` tinyint(4) NOT NULL,
+  `NombreEnfermedad` varchar(40) NOT NULL,
+  `Descripcion` varchar(200) DEFAULT NULL,
+  `TipoEnfermedad` varchar(30) DEFAULT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catespecialidades`
+--
+
+CREATE TABLE `catespecialidades` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(80) DEFAULT NULL,
+  `Descripcion` varchar(200) DEFAULT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catestado`
+--
+
+CREATE TABLE `catestado` (
+  `ID` tinyint(4) NOT NULL,
+  `NombreEstado` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catestadocita`
+--
+
+CREATE TABLE `catestadocita` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catestadocivil`
+--
+
+CREATE TABLE `catestadocivil` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catestadoconsulta`
+--
+
+CREATE TABLE `catestadoconsulta` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(15) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catestadoservicios`
+--
+
+CREATE TABLE `catestadoservicios` (
+  `idEstadoServicio` int(11) NOT NULL,
+  `nombreEstadoServicio` varchar(100) NOT NULL,
+  `Descripcion` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catexamenesmedicos`
+--
+
+CREATE TABLE `catexamenesmedicos` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(50) DEFAULT NULL,
+  `Precio` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catgenero`
+--
+
+CREATE TABLE `catgenero` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catgruposanguineo`
+--
+
+CREATE TABLE `catgruposanguineo` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(3) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catmaquinaria`
+--
+
+CREATE TABLE `catmaquinaria` (
+  `ID` tinyint(4) NOT NULL,
+  `NombreMaquinaria` varchar(80) DEFAULT NULL,
+  `Descripcion` varchar(200) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catmedicamentos`
+--
+
+CREATE TABLE `catmedicamentos` (
+  `Codigo` int(11) NOT NULL,
+  `NombreComercial` varchar(40) DEFAULT NULL,
+  `NombreGenerico` varchar(40) DEFAULT NULL,
+  `Formula` varchar(100) DEFAULT NULL,
+  `Presentacion` varchar(40) NOT NULL,
+  `cantidadDisponible` int(11) NOT NULL,
+  `precioUnidad` decimal(10,0) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catmetodosdepago`
+--
+
+CREATE TABLE `catmetodosdepago` (
+  `idMetodoPago` int(11) NOT NULL,
+  `NombreMetodoPago` varchar(100) DEFAULT NULL,
+  `Descripcion` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catmodulos`
+--
+
+CREATE TABLE `catmodulos` (
+  `CodModulo` int(11) NOT NULL,
+  `NombreModulo` varchar(30) NOT NULL,
+  `DescripcionModulo` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catmoneda`
+--
+
+CREATE TABLE `catmoneda` (
+  `idMoneda` int(11) NOT NULL,
+  `nombreMoneda` varchar(100) NOT NULL,
+  `simbolo` varchar(2) DEFAULT NULL,
+  `Descripcion` varchar(255) DEFAULT NULL,
+  `EsReferencia` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catnivelacademico`
+--
+
+CREATE TABLE `catnivelacademico` (
+  `ID` tinyint(4) NOT NULL,
+  `NombreNivelAcademico` varchar(80) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catparentesco`
+--
+
+CREATE TABLE `catparentesco` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catprivilegio`
+--
+
+CREATE TABLE `catprivilegio` (
+  `Codigo` int(11) NOT NULL,
+  `NombrePrivilegio` varchar(30) NOT NULL,
+  `Descripcion` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catsalaexamen`
+--
+
+CREATE TABLE `catsalaexamen` (
+  `ID` tinyint(4) NOT NULL,
+  `Nombre` varchar(60) DEFAULT NULL,
+  `Dimensiones` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catservicios`
+--
+
+CREATE TABLE `catservicios` (
+  `idServicio` int(11) NOT NULL,
+  `nombreServicio` varchar(100) NOT NULL,
+  `Descripcion` varchar(255) DEFAULT NULL,
+  `PrecioGeneral` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `catsubmodulos`
+--
+
+CREATE TABLE `catsubmodulos` (
+  `CodSubModulo` int(11) NOT NULL,
+  `NombreSubModulo` varchar(30) NOT NULL,
+  `DescripcionSubModulo` varchar(100) DEFAULT NULL,
+  `CodigoModulo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblantecedentes`
+--
+
+CREATE TABLE `tblantecedentes` (
+  `ID` int(11) NOT NULL,
+  `CodPaciente` int(11) NOT NULL,
+  `Enfermedad` tinyint(4) NOT NULL,
+  `FechaAparicion` date DEFAULT NULL,
+  `Descripcion` varchar(200) NOT NULL,
+  `Tratamiento` varchar(200) NOT NULL,
+  `Notas` varchar(200) DEFAULT NULL,
+  `EsGenetico` tinyint(4) NOT NULL,
+  `EstadoAntecedente` tinyint(4) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblaperturacaja`
+--
+
+CREATE TABLE `tblaperturacaja` (
+  `idApertura` int(11) NOT NULL,
+  `Caja` int(11) NOT NULL,
+  `MontoInicial` decimal(10,0) NOT NULL,
+  `EmpleadoCaja` int(11) NOT NULL,
+  `FyHInicio` datetime NOT NULL,
+  `FyHCierre` datetime DEFAULT NULL,
+  `EstadoApertura` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblcita`
+--
+
+CREATE TABLE `tblcita` (
+  `IDCita` int(11) NOT NULL,
+  `CodPaciente` int(11) NOT NULL,
+  `fechaProgramada` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblclientes`
+--
+
+CREATE TABLE `tblclientes` (
+  `idCliente` int(11) NOT NULL,
+  `CodPersona` int(11) NOT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblcomprasfarmacia`
+--
+
+CREATE TABLE `tblcomprasfarmacia` (
+  `idCompras` int(11) NOT NULL,
+  `Proveedor` int(11) NOT NULL,
+  `Descripcion` varchar(255) DEFAULT NULL,
+  `fechaCompra` date NOT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblconstancia`
+--
+
+CREATE TABLE `tblconstancia` (
+  `Codigo` int(11) NOT NULL,
+  `CodDiagnostico` int(11) NOT NULL,
+  `Razon` varchar(200) DEFAULT NULL,
+  `Fecha` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `HoraEntrada` datetime DEFAULT NULL,
+  `HoraSalida` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblconsulta`
+--
+
+CREATE TABLE `tblconsulta` (
+  `Codigo` int(11) NOT NULL,
+  `CodMedico` int(11) NOT NULL,
+  `IdCita` int(11) DEFAULT NULL,
+  `CodPaciente` int(11) NOT NULL,
+  `CodConsultorio` tinyint(4) NOT NULL,
+  `Estado` tinyint(4) NOT NULL,
+  `FechaYHora` datetime NOT NULL,
+  `FhInicio` datetime DEFAULT NULL,
+  `FhFinal` datetime DEFAULT NULL,
+  `MotivoConsulta` varchar(250) DEFAULT NULL,
+  `RegistradoPor` int(11) NOT NULL,
+  `idServicio` int(11) NOT NULL,
+  `NotasConsulta` int(11) DEFAULT NULL,
+  `MotivoRevertida` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tbldetallereceta`
+--
+
+CREATE TABLE `tbldetallereceta` (
+  `Codigo` int(11) NOT NULL,
+  `Medicamento` int(11) DEFAULT NULL,
+  `Dosis` varchar(50) DEFAULT NULL,
+  `Frecuencia` varchar(40) DEFAULT NULL,
+  `CodReceta` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tbldetallesdecita`
+--
+
+CREATE TABLE `tbldetallesdecita` (
+  `IDDetallecita` int(11) NOT NULL,
+  `IdCita` int(11) NOT NULL,
+  `HoraInicio` time NOT NULL,
+  `HoraFin` time DEFAULT NULL,
+  `IdConsultorio` tinyint(4) DEFAULT NULL,
+  `CodDoctor` int(11) DEFAULT NULL,
+  `Estado` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tbldetcomprasfarmacia`
+--
+
+CREATE TABLE `tbldetcomprasfarmacia` (
+  `idDetalleCompra` int(11) NOT NULL,
+  `Medicamento` int(11) NOT NULL,
+  `Cantidad` int(11) NOT NULL,
+  `CostoUnidad` double NOT NULL,
+  `CodigoCompra` int(11) NOT NULL,
+  `Notas` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tbldetfactconsulta`
+--
+
+CREATE TABLE `tbldetfactconsulta` (
+  `Codigo` int(11) NOT NULL,
+  `CodConsulta` int(11) NOT NULL,
+  `CodFactura` int(11) NOT NULL,
+  `Precio` decimal(10,0) DEFAULT NULL,
+  `Descuento` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tbldetfactexamen`
+--
+
+CREATE TABLE `tbldetfactexamen` (
+  `Codigo` int(11) NOT NULL,
+  `CodExamen` int(11) NOT NULL,
+  `Precio` decimal(10,0) DEFAULT NULL,
+  `Descuento` decimal(10,0) DEFAULT NULL,
+  `CodFactura` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tbldetpagoservicios`
+--
+
+CREATE TABLE `tbldetpagoservicios` (
+  `idDetPago` int(11) NOT NULL,
+  `ServicioBrindado` int(11) NOT NULL,
+  `Monto` decimal(10,0) NOT NULL,
+  `metodoDePago` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tbldiagnosticoconsulta`
+--
+
+CREATE TABLE `tbldiagnosticoconsulta` (
+  `Codigo` int(11) NOT NULL,
+  `Sintoma` varchar(20) NOT NULL,
+  `Descripcion` varchar(100) NOT NULL,
+  `IdEnfermedad` tinyint(4) DEFAULT NULL,
+  `CodConsulta` int(11) DEFAULT NULL,
+  `Nota` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblempleado`
+--
+
+CREATE TABLE `tblempleado` (
+  `Codigo` int(11) NOT NULL,
+  `INSS` varchar(9) NOT NULL,
+  `FechaIngreso` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `CodPersona` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblespecialidad`
+--
+
+CREATE TABLE `tblespecialidad` (
+  `ID` int(11) NOT NULL,
+  `CodDoctor` int(11) NOT NULL,
+  `IDEspecialidad` tinyint(4) NOT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblestudioacademico`
+--
+
+CREATE TABLE `tblestudioacademico` (
+  `IDEstudioAcademico` int(11) NOT NULL,
+  `CodEmpleado` int(11) NOT NULL,
+  `NombreEstudio` varchar(100) NOT NULL,
+  `TipoEstudio` tinyint(4) NOT NULL,
+  `Institucion` varchar(60) NOT NULL,
+  `InicioEstudio` date NOT NULL,
+  `FinEstudio` date NOT NULL,
+  `Diploma` blob DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblexamen`
+--
+
+CREATE TABLE `tblexamen` (
+  `Codigo` int(11) NOT NULL,
+  `RecetaPrevia` int(11) DEFAULT NULL,
+  `CodPaciente` int(11) NOT NULL,
+  `SalaMedica` tinyint(4) DEFAULT NULL,
+  `MaquinariaMedica` tinyint(4) DEFAULT NULL,
+  `EmpleadoRealizacion` int(11) DEFAULT NULL,
+  `FechaYHora` datetime DEFAULT NULL,
+  `idServicio` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblfactura`
+--
+
+CREATE TABLE `tblfactura` (
+  `Codigo` int(11) NOT NULL,
+  `MetodoDePago` tinyint(4) DEFAULT NULL,
+  `Descuento` decimal(10,0) DEFAULT NULL,
+  `EmpleadoCaja` int(11) DEFAULT NULL,
+  `PagadoCon` decimal(10,0) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblfamiliares`
+--
+
+CREATE TABLE `tblfamiliares` (
+  `ID` int(11) NOT NULL,
+  `CodPersona` int(11) NOT NULL,
+  `FamiliarDe` int(11) NOT NULL,
+  `Parentesco` tinyint(4) NOT NULL,
+  `EsTutor` tinyint(4) NOT NULL,
+  `ContactoEmergencia` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblhistorialacademico`
+--
+
+CREATE TABLE `tblhistorialacademico` (
+  `ID` int(11) NOT NULL,
+  `CodPaciente` int(11) NOT NULL,
+  `Nivel_academico` tinyint(4) NOT NULL,
+  `FechaObtencion` date NOT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `Estado` tinyint(4) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblhistorialcargos`
+--
+
+CREATE TABLE `tblhistorialcargos` (
+  `ID` int(11) NOT NULL,
+  `CodEmpleado` int(11) NOT NULL,
+  `IdCargo` tinyint(4) NOT NULL,
+  `FechaAsignacion` date NOT NULL,
+  `Salario` varchar(8) DEFAULT NULL,
+  `Estado` tinyint(4) DEFAULT NULL,
+  `RegistradoPor` int(11) NOT NULL,
+  `AprobadoPor` int(11) DEFAULT NULL,
+  `FechaRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblmaquinariamedica`
+--
+
+CREATE TABLE `tblmaquinariamedica` (
+  `Codigo` tinyint(4) NOT NULL,
+  `tipoMaquina` tinyint(4) DEFAULT NULL,
+  `marca` varchar(20) DEFAULT NULL,
+  `modelo` varchar(20) DEFAULT NULL,
+  `numeroDeSerie` varchar(20) DEFAULT NULL,
+  `Fecha_de_compra` date DEFAULT NULL,
+  `ubicacion` tinyint(4) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblocupacionpacientes`
+--
+
+CREATE TABLE `tblocupacionpacientes` (
+  `ID` int(11) NOT NULL,
+  `CodPaciente` int(11) NOT NULL,
+  `Nombre` varchar(60) NOT NULL,
+  `Empresa` varchar(60) DEFAULT NULL,
+  `Telefono` varchar(8) DEFAULT NULL,
+  `Referencia` varchar(60) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblpaciente`
+--
+
+CREATE TABLE `tblpaciente` (
+  `CodigoP` int(11) NOT NULL,
+  `CodExpediente` varchar(10) NOT NULL,
+  `INSS` int(11) NOT NULL,
+  `GrupoSanguineo` tinyint(4) NOT NULL,
+  `CodPersona` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblpersona`
+--
+
+CREATE TABLE `tblpersona` (
+  `Codigo` int(11) NOT NULL,
+  `Cedula` varchar(16) NOT NULL,
+  `Nombres` varchar(60) NOT NULL,
+  `Apellidos` varchar(60) NOT NULL,
+  `Fecha_de_nacimiento` date NOT NULL,
+  `Genero` tinyint(4) NOT NULL,
+  `Estado_civil` tinyint(4) DEFAULT NULL,
+  `Direccion` varchar(100) DEFAULT NULL,
+  `Telefono` varchar(13) DEFAULT NULL,
+  `Email` varchar(40) DEFAULT NULL,
+  `Estado` tinyint(4) NOT NULL,
+  `Fecha_registro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblprivilegiosusuario`
+--
+
+CREATE TABLE `tblprivilegiosusuario` (
+  `Codigo` int(11) NOT NULL,
+  `CodUsuario` int(11) NOT NULL,
+  `CodPrivilegio` int(11) NOT NULL,
+  `CodigoSubModulo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblproveedores`
+--
+
+CREATE TABLE `tblproveedores` (
+  `idProveedor` int(11) NOT NULL,
+  `nombreProvedor` varchar(100) NOT NULL,
+  `TelefonoProveedor` varchar(13) NOT NULL,
+  `DireccionProvedor` varchar(255) DEFAULT NULL,
+  `EmailProveedor` varchar(60) DEFAULT NULL,
+  `EstadoProveedor` tinyint(4) NOT NULL,
+  `Ranking` int(11) DEFAULT NULL,
+  `Fecha_registro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblrecetaexamen`
+--
+
+CREATE TABLE `tblrecetaexamen` (
+  `Codigo` int(11) NOT NULL,
+  `ConsultaPrevia` int(11) NOT NULL,
+  `TipoExamen` tinyint(4) NOT NULL,
+  `Motivo` varchar(250) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblrecetamedicamentos`
+--
+
+CREATE TABLE `tblrecetamedicamentos` (
+  `Codigo` int(11) NOT NULL,
+  `CodigoConsulta` int(11) NOT NULL,
+  `FechaEmision` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblrecibosventa`
+--
+
+CREATE TABLE `tblrecibosventa` (
+  `idRecibo` int(11) NOT NULL,
+  `Cliente` int(11) NOT NULL,
+  `RebajaTotal` decimal(10,0) DEFAULT NULL,
+  `aperturaCaja` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblresultado`
+--
+
+CREATE TABLE `tblresultado` (
+  `Codigo` int(11) NOT NULL,
+  `CodExamen` int(11) NOT NULL,
+  `ArchivoResultado` text DEFAULT NULL,
+  `FechaYHora` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblserviciosbrindados`
+--
+
+CREATE TABLE `tblserviciosbrindados` (
+  `idServiciosBrindados` int(11) NOT NULL,
+  `tipoServicio` int(11) NOT NULL,
+  `estadoServicio` int(11) NOT NULL,
+  `MontoServicio` decimal(10,0) NOT NULL,
+  `RebajaServicio` decimal(10,0) NOT NULL,
+  `NumeroRecibo` int(11) DEFAULT NULL,
+  `fechaYHora` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblsesion`
+--
+
+CREATE TABLE `tblsesion` (
+  `idSesion` int(11) NOT NULL,
+  `CodUsuarioSesion` int(11) NOT NULL,
+  `EstadoSesion` tinyint(4) NOT NULL,
+  `tokenSesion` varchar(200) DEFAULT NULL,
+  `FechayHoraSesion` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblsignosvitales`
+--
+
+CREATE TABLE `tblsignosvitales` (
+  `Codigo` int(11) NOT NULL,
+  `CodConsulta` int(11) NOT NULL,
+  `Peso` decimal(6,0) DEFAULT NULL,
+  `Altura` decimal(4,0) DEFAULT NULL,
+  `Presion_Arterial` varchar(6) DEFAULT NULL,
+  `Frecuencia_Respiratoria` varchar(6) DEFAULT NULL,
+  `Frecuencia_Cardiaca` varchar(6) DEFAULT NULL,
+  `Temperatura` decimal(6,0) DEFAULT NULL,
+  `HoraRegistro` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `CodEnfermera` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tbltipodecambio`
+--
+
+CREATE TABLE `tbltipodecambio` (
+  `idCambio` int(11) NOT NULL,
+  `Moneda` int(11) NOT NULL,
+  `CambioReferencia` decimal(10,0) NOT NULL,
+  `aperturaCaja` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblusuarios`
+--
+
+CREATE TABLE `tblusuarios` (
+  `Codigo` int(11) NOT NULL,
+  `NombreUsuario` varchar(14) NOT NULL,
+  `Pass` varchar(200) NOT NULL,
+  `CodPersonaU` int(11) NOT NULL,
+  `Estado` tinyint(4) DEFAULT NULL,
+  `imgUsuario` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tblventasfarmacia`
+--
+
+CREATE TABLE `tblventasfarmacia` (
+  `idVentas` int(11) NOT NULL,
+  `presentacionMedicamento` int(11) NOT NULL,
+  `cantidadProducto` int(11) NOT NULL,
+  `idServicio` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `catcaja`
+--
+ALTER TABLE `catcaja`
+  ADD PRIMARY KEY (`idCaja`);
+
+--
+-- Indices de la tabla `catcargos`
+--
+ALTER TABLE `catcargos`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catconsultorio`
+--
+ALTER TABLE `catconsultorio`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catenfermedades`
+--
+ALTER TABLE `catenfermedades`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catespecialidades`
+--
+ALTER TABLE `catespecialidades`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catestado`
+--
+ALTER TABLE `catestado`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catestadocita`
+--
+ALTER TABLE `catestadocita`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catestadocivil`
+--
+ALTER TABLE `catestadocivil`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catestadoconsulta`
+--
+ALTER TABLE `catestadoconsulta`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catestadoservicios`
+--
+ALTER TABLE `catestadoservicios`
+  ADD PRIMARY KEY (`idEstadoServicio`);
+
+--
+-- Indices de la tabla `catexamenesmedicos`
+--
+ALTER TABLE `catexamenesmedicos`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catgenero`
+--
+ALTER TABLE `catgenero`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catgruposanguineo`
+--
+ALTER TABLE `catgruposanguineo`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catmaquinaria`
+--
+ALTER TABLE `catmaquinaria`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catmedicamentos`
+--
+ALTER TABLE `catmedicamentos`
+  ADD PRIMARY KEY (`Codigo`);
+
+--
+-- Indices de la tabla `catmetodosdepago`
+--
+ALTER TABLE `catmetodosdepago`
+  ADD PRIMARY KEY (`idMetodoPago`);
+
+--
+-- Indices de la tabla `catmodulos`
+--
+ALTER TABLE `catmodulos`
+  ADD PRIMARY KEY (`CodModulo`);
+
+--
+-- Indices de la tabla `catmoneda`
+--
+ALTER TABLE `catmoneda`
+  ADD PRIMARY KEY (`idMoneda`),
+  ADD KEY `EsReferencia` (`EsReferencia`);
+
+--
+-- Indices de la tabla `catnivelacademico`
+--
+ALTER TABLE `catnivelacademico`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catparentesco`
+--
+ALTER TABLE `catparentesco`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catprivilegio`
+--
+ALTER TABLE `catprivilegio`
+  ADD PRIMARY KEY (`Codigo`);
+
+--
+-- Indices de la tabla `catsalaexamen`
+--
+ALTER TABLE `catsalaexamen`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- Indices de la tabla `catservicios`
+--
+ALTER TABLE `catservicios`
+  ADD PRIMARY KEY (`idServicio`);
+
+--
+-- Indices de la tabla `catsubmodulos`
+--
+ALTER TABLE `catsubmodulos`
+  ADD PRIMARY KEY (`CodSubModulo`),
+  ADD KEY `CodigoModulo` (`CodigoModulo`);
+
+--
+-- Indices de la tabla `tblantecedentes`
+--
+ALTER TABLE `tblantecedentes`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `CodPaciente` (`CodPaciente`),
+  ADD KEY `Enfermedad` (`Enfermedad`),
+  ADD KEY `EstadoAntecedente` (`EstadoAntecedente`);
+
+--
+-- Indices de la tabla `tblaperturacaja`
+--
+ALTER TABLE `tblaperturacaja`
+  ADD PRIMARY KEY (`idApertura`),
+  ADD KEY `EmpleadoCaja` (`EmpleadoCaja`),
+  ADD KEY `Caja` (`Caja`),
+  ADD KEY `EstadoApertura` (`EstadoApertura`);
+
+--
+-- Indices de la tabla `tblcita`
+--
+ALTER TABLE `tblcita`
+  ADD PRIMARY KEY (`IDCita`),
+  ADD KEY `CodPaciente` (`CodPaciente`);
+
+--
+-- Indices de la tabla `tblclientes`
+--
+ALTER TABLE `tblclientes`
+  ADD PRIMARY KEY (`idCliente`),
+  ADD KEY `CodPersona` (`CodPersona`);
+
+--
+-- Indices de la tabla `tblcomprasfarmacia`
+--
+ALTER TABLE `tblcomprasfarmacia`
+  ADD PRIMARY KEY (`idCompras`),
+  ADD KEY `Proveedor` (`Proveedor`);
+
+--
+-- Indices de la tabla `tblconstancia`
+--
+ALTER TABLE `tblconstancia`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodDiagnostico` (`CodDiagnostico`);
+
+--
+-- Indices de la tabla `tblconsulta`
+--
+ALTER TABLE `tblconsulta`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodMedico` (`CodMedico`),
+  ADD KEY `CodPaciente` (`CodPaciente`),
+  ADD KEY `CodConsultorio` (`CodConsultorio`),
+  ADD KEY `Estado` (`Estado`),
+  ADD KEY `RegistradoPor` (`RegistradoPor`),
+  ADD KEY `idServicio` (`idServicio`);
+
+--
+-- Indices de la tabla `tbldetallereceta`
+--
+ALTER TABLE `tbldetallereceta`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `Medicamento` (`Medicamento`),
+  ADD KEY `CodReceta` (`CodReceta`);
+
+--
+-- Indices de la tabla `tbldetallesdecita`
+--
+ALTER TABLE `tbldetallesdecita`
+  ADD PRIMARY KEY (`IDDetallecita`),
+  ADD KEY `IdCita` (`IdCita`),
+  ADD KEY `IdConsultorio` (`IdConsultorio`),
+  ADD KEY `CodDoctor` (`CodDoctor`),
+  ADD KEY `Estado` (`Estado`);
+
+--
+-- Indices de la tabla `tbldetcomprasfarmacia`
+--
+ALTER TABLE `tbldetcomprasfarmacia`
+  ADD PRIMARY KEY (`idDetalleCompra`),
+  ADD KEY `Medicamento` (`Medicamento`),
+  ADD KEY `CodigoCompra` (`CodigoCompra`);
+
+--
+-- Indices de la tabla `tbldetfactconsulta`
+--
+ALTER TABLE `tbldetfactconsulta`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodConsulta` (`CodConsulta`),
+  ADD KEY `CodFactura` (`CodFactura`);
+
+--
+-- Indices de la tabla `tbldetfactexamen`
+--
+ALTER TABLE `tbldetfactexamen`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodExamen` (`CodExamen`),
+  ADD KEY `CodFactura` (`CodFactura`);
+
+--
+-- Indices de la tabla `tbldetpagoservicios`
+--
+ALTER TABLE `tbldetpagoservicios`
+  ADD PRIMARY KEY (`idDetPago`),
+  ADD KEY `ServicioBrindado` (`ServicioBrindado`),
+  ADD KEY `metodoDePago` (`metodoDePago`);
+
+--
+-- Indices de la tabla `tbldiagnosticoconsulta`
+--
+ALTER TABLE `tbldiagnosticoconsulta`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodConsulta` (`CodConsulta`),
+  ADD KEY `IdEnfermedad` (`IdEnfermedad`);
+
+--
+-- Indices de la tabla `tblempleado`
+--
+ALTER TABLE `tblempleado`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodPersona` (`CodPersona`);
+
+--
+-- Indices de la tabla `tblespecialidad`
+--
+ALTER TABLE `tblespecialidad`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `CodDoctor` (`CodDoctor`),
+  ADD KEY `IDEspecialidad` (`IDEspecialidad`);
+
+--
+-- Indices de la tabla `tblestudioacademico`
+--
+ALTER TABLE `tblestudioacademico`
+  ADD PRIMARY KEY (`IDEstudioAcademico`),
+  ADD KEY `CodEmpleado` (`CodEmpleado`),
+  ADD KEY `TipoEstudio` (`TipoEstudio`);
+
+--
+-- Indices de la tabla `tblexamen`
+--
+ALTER TABLE `tblexamen`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `RecetaPrevia` (`RecetaPrevia`),
+  ADD KEY `CodPaciente` (`CodPaciente`),
+  ADD KEY `SalaMedica` (`SalaMedica`),
+  ADD KEY `EmpleadoRealizacion` (`EmpleadoRealizacion`),
+  ADD KEY `idServicio` (`idServicio`);
+
+--
+-- Indices de la tabla `tblfactura`
+--
+ALTER TABLE `tblfactura`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `MetodoDePago` (`MetodoDePago`),
+  ADD KEY `EmpleadoCaja` (`EmpleadoCaja`);
+
+--
+-- Indices de la tabla `tblfamiliares`
+--
+ALTER TABLE `tblfamiliares`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `CodPersona` (`CodPersona`),
+  ADD KEY `FamiliarDe` (`FamiliarDe`),
+  ADD KEY `Parentesco` (`Parentesco`);
+
+--
+-- Indices de la tabla `tblhistorialacademico`
+--
+ALTER TABLE `tblhistorialacademico`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `CodPaciente` (`CodPaciente`),
+  ADD KEY `Nivel_academico` (`Nivel_academico`),
+  ADD KEY `Estado` (`Estado`);
+
+--
+-- Indices de la tabla `tblhistorialcargos`
+--
+ALTER TABLE `tblhistorialcargos`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `CodEmpleado` (`CodEmpleado`),
+  ADD KEY `IdCargo` (`IdCargo`),
+  ADD KEY `Estado` (`Estado`),
+  ADD KEY `RegistradoPor` (`RegistradoPor`),
+  ADD KEY `AprobadoPor` (`AprobadoPor`);
+
+--
+-- Indices de la tabla `tblmaquinariamedica`
+--
+ALTER TABLE `tblmaquinariamedica`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `tipoMaquina` (`tipoMaquina`),
+  ADD KEY `ubicacion` (`ubicacion`);
+
+--
+-- Indices de la tabla `tblocupacionpacientes`
+--
+ALTER TABLE `tblocupacionpacientes`
+  ADD PRIMARY KEY (`ID`),
+  ADD KEY `CodPaciente` (`CodPaciente`);
+
+--
+-- Indices de la tabla `tblpaciente`
+--
+ALTER TABLE `tblpaciente`
+  ADD PRIMARY KEY (`CodigoP`),
+  ADD KEY `CodPersona` (`CodPersona`),
+  ADD KEY `GrupoSanguineo` (`GrupoSanguineo`);
+
+--
+-- Indices de la tabla `tblpersona`
+--
+ALTER TABLE `tblpersona`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD UNIQUE KEY `Cedula` (`Cedula`),
+  ADD KEY `Genero` (`Genero`),
+  ADD KEY `Estado_civil` (`Estado_civil`),
+  ADD KEY `Estado` (`Estado`);
+
+--
+-- Indices de la tabla `tblprivilegiosusuario`
+--
+ALTER TABLE `tblprivilegiosusuario`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodPrivilegio` (`CodPrivilegio`),
+  ADD KEY `CodUsuario` (`CodUsuario`),
+  ADD KEY `CodigoSubModulo` (`CodigoSubModulo`);
+
+--
+-- Indices de la tabla `tblproveedores`
+--
+ALTER TABLE `tblproveedores`
+  ADD PRIMARY KEY (`idProveedor`),
+  ADD KEY `EstadoProveedor` (`EstadoProveedor`);
+
+--
+-- Indices de la tabla `tblrecetaexamen`
+--
+ALTER TABLE `tblrecetaexamen`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `TipoExamen` (`TipoExamen`),
+  ADD KEY `ConsultaPrevia` (`ConsultaPrevia`);
+
+--
+-- Indices de la tabla `tblrecetamedicamentos`
+--
+ALTER TABLE `tblrecetamedicamentos`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodigoConsulta` (`CodigoConsulta`);
+
+--
+-- Indices de la tabla `tblrecibosventa`
+--
+ALTER TABLE `tblrecibosventa`
+  ADD PRIMARY KEY (`idRecibo`),
+  ADD KEY `Cliente` (`Cliente`),
+  ADD KEY `aperturaCaja` (`aperturaCaja`);
+
+--
+-- Indices de la tabla `tblresultado`
+--
+ALTER TABLE `tblresultado`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodExamen` (`CodExamen`);
+
+--
+-- Indices de la tabla `tblserviciosbrindados`
+--
+ALTER TABLE `tblserviciosbrindados`
+  ADD PRIMARY KEY (`idServiciosBrindados`),
+  ADD KEY `tipoServicio` (`tipoServicio`),
+  ADD KEY `estadoServicio` (`estadoServicio`),
+  ADD KEY `NumeroRecibo` (`NumeroRecibo`);
+
+--
+-- Indices de la tabla `tblsesion`
+--
+ALTER TABLE `tblsesion`
+  ADD PRIMARY KEY (`idSesion`),
+  ADD KEY `CodUsuarioSesion` (`CodUsuarioSesion`),
+  ADD KEY `EstadoSesion` (`EstadoSesion`);
+
+--
+-- Indices de la tabla `tblsignosvitales`
+--
+ALTER TABLE `tblsignosvitales`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD KEY `CodConsulta` (`CodConsulta`),
+  ADD KEY `CodEnfermera` (`CodEnfermera`);
+
+--
+-- Indices de la tabla `tbltipodecambio`
+--
+ALTER TABLE `tbltipodecambio`
+  ADD PRIMARY KEY (`idCambio`),
+  ADD KEY `aperturaCaja` (`aperturaCaja`),
+  ADD KEY `Moneda` (`Moneda`);
+
+--
+-- Indices de la tabla `tblusuarios`
+--
+ALTER TABLE `tblusuarios`
+  ADD PRIMARY KEY (`Codigo`),
+  ADD UNIQUE KEY `NombreUsuario` (`NombreUsuario`),
+  ADD UNIQUE KEY `CodPersonaU` (`CodPersonaU`),
+  ADD KEY `Estado` (`Estado`);
+
+--
+-- Indices de la tabla `tblventasfarmacia`
+--
+ALTER TABLE `tblventasfarmacia`
+  ADD PRIMARY KEY (`idVentas`),
+  ADD KEY `presentacionMedicamento` (`presentacionMedicamento`),
+  ADD KEY `idServicio` (`idServicio`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `catcaja`
+--
+ALTER TABLE `catcaja`
+  MODIFY `idCaja` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catcargos`
+--
+ALTER TABLE `catcargos`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catconsultorio`
+--
+ALTER TABLE `catconsultorio`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catenfermedades`
+--
+ALTER TABLE `catenfermedades`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catespecialidades`
+--
+ALTER TABLE `catespecialidades`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catestado`
+--
+ALTER TABLE `catestado`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catestadocita`
+--
+ALTER TABLE `catestadocita`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catestadocivil`
+--
+ALTER TABLE `catestadocivil`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catestadoconsulta`
+--
+ALTER TABLE `catestadoconsulta`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catestadoservicios`
+--
+ALTER TABLE `catestadoservicios`
+  MODIFY `idEstadoServicio` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catexamenesmedicos`
+--
+ALTER TABLE `catexamenesmedicos`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catgenero`
+--
+ALTER TABLE `catgenero`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catgruposanguineo`
+--
+ALTER TABLE `catgruposanguineo`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catmaquinaria`
+--
+ALTER TABLE `catmaquinaria`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catmedicamentos`
+--
+ALTER TABLE `catmedicamentos`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catmetodosdepago`
+--
+ALTER TABLE `catmetodosdepago`
+  MODIFY `idMetodoPago` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catmodulos`
+--
+ALTER TABLE `catmodulos`
+  MODIFY `CodModulo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catmoneda`
+--
+ALTER TABLE `catmoneda`
+  MODIFY `idMoneda` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catnivelacademico`
+--
+ALTER TABLE `catnivelacademico`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catparentesco`
+--
+ALTER TABLE `catparentesco`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catprivilegio`
+--
+ALTER TABLE `catprivilegio`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catsalaexamen`
+--
+ALTER TABLE `catsalaexamen`
+  MODIFY `ID` tinyint(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catservicios`
+--
+ALTER TABLE `catservicios`
+  MODIFY `idServicio` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `catsubmodulos`
+--
+ALTER TABLE `catsubmodulos`
+  MODIFY `CodSubModulo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblantecedentes`
+--
+ALTER TABLE `tblantecedentes`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblaperturacaja`
+--
+ALTER TABLE `tblaperturacaja`
+  MODIFY `idApertura` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblcita`
+--
+ALTER TABLE `tblcita`
+  MODIFY `IDCita` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblclientes`
+--
+ALTER TABLE `tblclientes`
+  MODIFY `idCliente` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblcomprasfarmacia`
+--
+ALTER TABLE `tblcomprasfarmacia`
+  MODIFY `idCompras` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblconstancia`
+--
+ALTER TABLE `tblconstancia`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblconsulta`
+--
+ALTER TABLE `tblconsulta`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tbldetallereceta`
+--
+ALTER TABLE `tbldetallereceta`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tbldetallesdecita`
+--
+ALTER TABLE `tbldetallesdecita`
+  MODIFY `IDDetallecita` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tbldetcomprasfarmacia`
+--
+ALTER TABLE `tbldetcomprasfarmacia`
+  MODIFY `idDetalleCompra` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tbldetfactconsulta`
+--
+ALTER TABLE `tbldetfactconsulta`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tbldetfactexamen`
+--
+ALTER TABLE `tbldetfactexamen`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tbldetpagoservicios`
+--
+ALTER TABLE `tbldetpagoservicios`
+  MODIFY `idDetPago` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tbldiagnosticoconsulta`
+--
+ALTER TABLE `tbldiagnosticoconsulta`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblempleado`
+--
+ALTER TABLE `tblempleado`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblespecialidad`
+--
+ALTER TABLE `tblespecialidad`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblestudioacademico`
+--
+ALTER TABLE `tblestudioacademico`
+  MODIFY `IDEstudioAcademico` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblexamen`
+--
+ALTER TABLE `tblexamen`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblfactura`
+--
+ALTER TABLE `tblfactura`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblfamiliares`
+--
+ALTER TABLE `tblfamiliares`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblhistorialacademico`
+--
+ALTER TABLE `tblhistorialacademico`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblhistorialcargos`
+--
+ALTER TABLE `tblhistorialcargos`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblocupacionpacientes`
+--
+ALTER TABLE `tblocupacionpacientes`
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblpaciente`
+--
+ALTER TABLE `tblpaciente`
+  MODIFY `CodigoP` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblprivilegiosusuario`
+--
+ALTER TABLE `tblprivilegiosusuario`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblproveedores`
+--
+ALTER TABLE `tblproveedores`
+  MODIFY `idProveedor` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblrecetaexamen`
+--
+ALTER TABLE `tblrecetaexamen`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblrecetamedicamentos`
+--
+ALTER TABLE `tblrecetamedicamentos`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblrecibosventa`
+--
+ALTER TABLE `tblrecibosventa`
+  MODIFY `idRecibo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblresultado`
+--
+ALTER TABLE `tblresultado`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblserviciosbrindados`
+--
+ALTER TABLE `tblserviciosbrindados`
+  MODIFY `idServiciosBrindados` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblsesion`
+--
+ALTER TABLE `tblsesion`
+  MODIFY `idSesion` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblsignosvitales`
+--
+ALTER TABLE `tblsignosvitales`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tbltipodecambio`
+--
+ALTER TABLE `tbltipodecambio`
+  MODIFY `idCambio` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblusuarios`
+--
+ALTER TABLE `tblusuarios`
+  MODIFY `Codigo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `tblventasfarmacia`
+--
+ALTER TABLE `tblventasfarmacia`
+  MODIFY `idVentas` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `catmoneda`
+--
+ALTER TABLE `catmoneda`
+  ADD CONSTRAINT `catmoneda_ibfk_1` FOREIGN KEY (`EsReferencia`) REFERENCES `catestado` (`ID`);
+
+--
+-- Filtros para la tabla `catsubmodulos`
+--
+ALTER TABLE `catsubmodulos`
+  ADD CONSTRAINT `catsubmodulos_ibfk_1` FOREIGN KEY (`CodigoModulo`) REFERENCES `catmodulos` (`CodModulo`);
+
+--
+-- Filtros para la tabla `tblantecedentes`
+--
+ALTER TABLE `tblantecedentes`
+  ADD CONSTRAINT `tblantecedentes_ibfk_1` FOREIGN KEY (`CodPaciente`) REFERENCES `tblpaciente` (`CodigoP`),
+  ADD CONSTRAINT `tblantecedentes_ibfk_2` FOREIGN KEY (`Enfermedad`) REFERENCES `catenfermedades` (`ID`),
+  ADD CONSTRAINT `tblantecedentes_ibfk_3` FOREIGN KEY (`EstadoAntecedente`) REFERENCES `catestado` (`ID`);
+
+--
+-- Filtros para la tabla `tblaperturacaja`
+--
+ALTER TABLE `tblaperturacaja`
+  ADD CONSTRAINT `tblaperturacaja_ibfk_1` FOREIGN KEY (`EmpleadoCaja`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tblaperturacaja_ibfk_2` FOREIGN KEY (`Caja`) REFERENCES `catcaja` (`idCaja`),
+  ADD CONSTRAINT `tblaperturacaja_ibfk_3` FOREIGN KEY (`EstadoApertura`) REFERENCES `catestado` (`ID`);
+
+--
+-- Filtros para la tabla `tblcita`
+--
+ALTER TABLE `tblcita`
+  ADD CONSTRAINT `tblcita_ibfk_1` FOREIGN KEY (`CodPaciente`) REFERENCES `tblpaciente` (`CodigoP`);
+
+--
+-- Filtros para la tabla `tblclientes`
+--
+ALTER TABLE `tblclientes`
+  ADD CONSTRAINT `tblclientes_ibfk_1` FOREIGN KEY (`CodPersona`) REFERENCES `tblpersona` (`Codigo`);
+
+--
+-- Filtros para la tabla `tblcomprasfarmacia`
+--
+ALTER TABLE `tblcomprasfarmacia`
+  ADD CONSTRAINT `tblcomprasfarmacia_ibfk_1` FOREIGN KEY (`Proveedor`) REFERENCES `tblproveedores` (`idProveedor`);
+
+--
+-- Filtros para la tabla `tblconstancia`
+--
+ALTER TABLE `tblconstancia`
+  ADD CONSTRAINT `tblconstancia_ibfk_1` FOREIGN KEY (`CodDiagnostico`) REFERENCES `tbldiagnosticoconsulta` (`Codigo`);
+
+--
+-- Filtros para la tabla `tblconsulta`
+--
+ALTER TABLE `tblconsulta`
+  ADD CONSTRAINT `tblconsulta_ibfk_1` FOREIGN KEY (`CodMedico`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tblconsulta_ibfk_2` FOREIGN KEY (`CodPaciente`) REFERENCES `tblpaciente` (`CodigoP`),
+  ADD CONSTRAINT `tblconsulta_ibfk_3` FOREIGN KEY (`CodConsultorio`) REFERENCES `catconsultorio` (`ID`),
+  ADD CONSTRAINT `tblconsulta_ibfk_4` FOREIGN KEY (`Estado`) REFERENCES `catestadoconsulta` (`ID`),
+  ADD CONSTRAINT `tblconsulta_ibfk_5` FOREIGN KEY (`RegistradoPor`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tblconsulta_ibfk_6` FOREIGN KEY (`idServicio`) REFERENCES `tblserviciosbrindados` (`idServiciosBrindados`);
+
+--
+-- Filtros para la tabla `tbldetallereceta`
+--
+ALTER TABLE `tbldetallereceta`
+  ADD CONSTRAINT `tbldetallereceta_ibfk_1` FOREIGN KEY (`Medicamento`) REFERENCES `catmedicamentos` (`Codigo`),
+  ADD CONSTRAINT `tbldetallereceta_ibfk_2` FOREIGN KEY (`CodReceta`) REFERENCES `tblrecetamedicamentos` (`Codigo`);
+
+--
+-- Filtros para la tabla `tbldetallesdecita`
+--
+ALTER TABLE `tbldetallesdecita`
+  ADD CONSTRAINT `tbldetallesdecita_ibfk_1` FOREIGN KEY (`IdCita`) REFERENCES `tblcita` (`IDCita`),
+  ADD CONSTRAINT `tbldetallesdecita_ibfk_2` FOREIGN KEY (`IdConsultorio`) REFERENCES `catconsultorio` (`ID`),
+  ADD CONSTRAINT `tbldetallesdecita_ibfk_3` FOREIGN KEY (`CodDoctor`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tbldetallesdecita_ibfk_4` FOREIGN KEY (`Estado`) REFERENCES `catestadocita` (`ID`);
+
+--
+-- Filtros para la tabla `tbldetcomprasfarmacia`
+--
+ALTER TABLE `tbldetcomprasfarmacia`
+  ADD CONSTRAINT `tbldetcomprasfarmacia_ibfk_1` FOREIGN KEY (`Medicamento`) REFERENCES `catmedicamentos` (`Codigo`),
+  ADD CONSTRAINT `tbldetcomprasfarmacia_ibfk_2` FOREIGN KEY (`CodigoCompra`) REFERENCES `tblcomprasfarmacia` (`idCompras`);
+
+--
+-- Filtros para la tabla `tbldetfactconsulta`
+--
+ALTER TABLE `tbldetfactconsulta`
+  ADD CONSTRAINT `tbldetfactconsulta_ibfk_1` FOREIGN KEY (`CodConsulta`) REFERENCES `tblconsulta` (`Codigo`),
+  ADD CONSTRAINT `tbldetfactconsulta_ibfk_2` FOREIGN KEY (`CodFactura`) REFERENCES `tblfactura` (`Codigo`);
+
+--
+-- Filtros para la tabla `tbldetfactexamen`
+--
+ALTER TABLE `tbldetfactexamen`
+  ADD CONSTRAINT `tbldetfactexamen_ibfk_1` FOREIGN KEY (`CodExamen`) REFERENCES `tblexamen` (`Codigo`),
+  ADD CONSTRAINT `tbldetfactexamen_ibfk_2` FOREIGN KEY (`CodFactura`) REFERENCES `tblfactura` (`Codigo`);
+
+--
+-- Filtros para la tabla `tbldetpagoservicios`
+--
+ALTER TABLE `tbldetpagoservicios`
+  ADD CONSTRAINT `tbldetpagoservicios_ibfk_1` FOREIGN KEY (`ServicioBrindado`) REFERENCES `tblserviciosbrindados` (`idServiciosBrindados`),
+  ADD CONSTRAINT `tbldetpagoservicios_ibfk_2` FOREIGN KEY (`metodoDePago`) REFERENCES `catmetodosdepago` (`idMetodoPago`);
+
+--
+-- Filtros para la tabla `tbldiagnosticoconsulta`
+--
+ALTER TABLE `tbldiagnosticoconsulta`
+  ADD CONSTRAINT `tbldiagnosticoconsulta_ibfk_1` FOREIGN KEY (`CodConsulta`) REFERENCES `tblconsulta` (`Codigo`),
+  ADD CONSTRAINT `tbldiagnosticoconsulta_ibfk_2` FOREIGN KEY (`IdEnfermedad`) REFERENCES `catenfermedades` (`ID`);
+
+--
+-- Filtros para la tabla `tblempleado`
+--
+ALTER TABLE `tblempleado`
+  ADD CONSTRAINT `tblempleado_ibfk_1` FOREIGN KEY (`CodPersona`) REFERENCES `tblpersona` (`Codigo`);
+
+--
+-- Filtros para la tabla `tblespecialidad`
+--
+ALTER TABLE `tblespecialidad`
+  ADD CONSTRAINT `tblespecialidad_ibfk_1` FOREIGN KEY (`CodDoctor`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tblespecialidad_ibfk_2` FOREIGN KEY (`IDEspecialidad`) REFERENCES `catespecialidades` (`ID`);
+
+--
+-- Filtros para la tabla `tblestudioacademico`
+--
+ALTER TABLE `tblestudioacademico`
+  ADD CONSTRAINT `tblestudioacademico_ibfk_1` FOREIGN KEY (`CodEmpleado`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tblestudioacademico_ibfk_2` FOREIGN KEY (`TipoEstudio`) REFERENCES `catnivelacademico` (`ID`);
+
+--
+-- Filtros para la tabla `tblexamen`
+--
+ALTER TABLE `tblexamen`
+  ADD CONSTRAINT `tblexamen_ibfk_1` FOREIGN KEY (`RecetaPrevia`) REFERENCES `tblrecetaexamen` (`Codigo`),
+  ADD CONSTRAINT `tblexamen_ibfk_2` FOREIGN KEY (`CodPaciente`) REFERENCES `tblpaciente` (`CodigoP`),
+  ADD CONSTRAINT `tblexamen_ibfk_3` FOREIGN KEY (`SalaMedica`) REFERENCES `catsalaexamen` (`ID`),
+  ADD CONSTRAINT `tblexamen_ibfk_4` FOREIGN KEY (`EmpleadoRealizacion`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tblexamen_ibfk_5` FOREIGN KEY (`idServicio`) REFERENCES `tblserviciosbrindados` (`idServiciosBrindados`);
+
+--
+-- Filtros para la tabla `tblfamiliares`
+--
+ALTER TABLE `tblfamiliares`
+  ADD CONSTRAINT `tblfamiliares_ibfk_1` FOREIGN KEY (`CodPersona`) REFERENCES `tblpersona` (`Codigo`),
+  ADD CONSTRAINT `tblfamiliares_ibfk_2` FOREIGN KEY (`FamiliarDe`) REFERENCES `tblpersona` (`Codigo`),
+  ADD CONSTRAINT `tblfamiliares_ibfk_3` FOREIGN KEY (`Parentesco`) REFERENCES `catparentesco` (`ID`);
+
+--
+-- Filtros para la tabla `tblhistorialacademico`
+--
+ALTER TABLE `tblhistorialacademico`
+  ADD CONSTRAINT `tblhistorialacademico_ibfk_1` FOREIGN KEY (`CodPaciente`) REFERENCES `tblpaciente` (`CodigoP`),
+  ADD CONSTRAINT `tblhistorialacademico_ibfk_2` FOREIGN KEY (`Nivel_academico`) REFERENCES `catnivelacademico` (`ID`),
+  ADD CONSTRAINT `tblhistorialacademico_ibfk_3` FOREIGN KEY (`Estado`) REFERENCES `catestado` (`ID`);
+
+--
+-- Filtros para la tabla `tblhistorialcargos`
+--
+ALTER TABLE `tblhistorialcargos`
+  ADD CONSTRAINT `tblhistorialcargos_ibfk_1` FOREIGN KEY (`CodEmpleado`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tblhistorialcargos_ibfk_2` FOREIGN KEY (`IdCargo`) REFERENCES `catcargos` (`ID`),
+  ADD CONSTRAINT `tblhistorialcargos_ibfk_3` FOREIGN KEY (`Estado`) REFERENCES `catestado` (`ID`),
+  ADD CONSTRAINT `tblhistorialcargos_ibfk_4` FOREIGN KEY (`RegistradoPor`) REFERENCES `tblempleado` (`Codigo`),
+  ADD CONSTRAINT `tblhistorialcargos_ibfk_5` FOREIGN KEY (`AprobadoPor`) REFERENCES `tblempleado` (`Codigo`);
+
+--
+-- Filtros para la tabla `tblmaquinariamedica`
+--
+ALTER TABLE `tblmaquinariamedica`
+  ADD CONSTRAINT `tblmaquinariamedica_ibfk_1` FOREIGN KEY (`tipoMaquina`) REFERENCES `catmaquinaria` (`ID`),
+  ADD CONSTRAINT `tblmaquinariamedica_ibfk_2` FOREIGN KEY (`ubicacion`) REFERENCES `catsalaexamen` (`ID`);
+
+--
+-- Filtros para la tabla `tblocupacionpacientes`
+--
+ALTER TABLE `tblocupacionpacientes`
+  ADD CONSTRAINT `tblocupacionpacientes_ibfk_1` FOREIGN KEY (`CodPaciente`) REFERENCES `tblpaciente` (`CodigoP`);
+
+--
+-- Filtros para la tabla `tblpaciente`
+--
+ALTER TABLE `tblpaciente`
+  ADD CONSTRAINT `tblpaciente_ibfk_1` FOREIGN KEY (`CodPersona`) REFERENCES `tblpersona` (`Codigo`),
+  ADD CONSTRAINT `tblpaciente_ibfk_2` FOREIGN KEY (`GrupoSanguineo`) REFERENCES `catgruposanguineo` (`ID`);
+
+--
+-- Filtros para la tabla `tblpersona`
+--
+ALTER TABLE `tblpersona`
+  ADD CONSTRAINT `tblpersona_ibfk_1` FOREIGN KEY (`Genero`) REFERENCES `catgenero` (`ID`),
+  ADD CONSTRAINT `tblpersona_ibfk_2` FOREIGN KEY (`Estado_civil`) REFERENCES `catestadocivil` (`ID`),
+  ADD CONSTRAINT `tblpersona_ibfk_3` FOREIGN KEY (`Estado`) REFERENCES `catestado` (`ID`);
+
+--
+-- Filtros para la tabla `tblprivilegiosusuario`
+--
+ALTER TABLE `tblprivilegiosusuario`
+  ADD CONSTRAINT `tblprivilegiosusuario_ibfk_1` FOREIGN KEY (`CodPrivilegio`) REFERENCES `catprivilegio` (`Codigo`),
+  ADD CONSTRAINT `tblprivilegiosusuario_ibfk_2` FOREIGN KEY (`CodUsuario`) REFERENCES `tblusuarios` (`Codigo`),
+  ADD CONSTRAINT `tblprivilegiosusuario_ibfk_3` FOREIGN KEY (`CodigoSubModulo`) REFERENCES `catsubmodulos` (`CodSubModulo`);
+
+--
+-- Filtros para la tabla `tblproveedores`
+--
+ALTER TABLE `tblproveedores`
+  ADD CONSTRAINT `tblproveedores_ibfk_1` FOREIGN KEY (`EstadoProveedor`) REFERENCES `catestado` (`ID`);
+
+--
+-- Filtros para la tabla `tblrecetaexamen`
+--
+ALTER TABLE `tblrecetaexamen`
+  ADD CONSTRAINT `tblrecetaexamen_ibfk_1` FOREIGN KEY (`TipoExamen`) REFERENCES `catexamenesmedicos` (`ID`),
+  ADD CONSTRAINT `tblrecetaexamen_ibfk_2` FOREIGN KEY (`ConsultaPrevia`) REFERENCES `tblconsulta` (`Codigo`);
+
+--
+-- Filtros para la tabla `tblrecetamedicamentos`
+--
+ALTER TABLE `tblrecetamedicamentos`
+  ADD CONSTRAINT `tblrecetamedicamentos_ibfk_1` FOREIGN KEY (`CodigoConsulta`) REFERENCES `tblconsulta` (`Codigo`);
+
+--
+-- Filtros para la tabla `tblrecibosventa`
+--
+ALTER TABLE `tblrecibosventa`
+  ADD CONSTRAINT `tblrecibosventa_ibfk_1` FOREIGN KEY (`Cliente`) REFERENCES `tblclientes` (`idCliente`),
+  ADD CONSTRAINT `tblrecibosventa_ibfk_2` FOREIGN KEY (`aperturaCaja`) REFERENCES `tblaperturacaja` (`idApertura`);
+
+--
+-- Filtros para la tabla `tblresultado`
+--
+ALTER TABLE `tblresultado`
+  ADD CONSTRAINT `tblresultado_ibfk_1` FOREIGN KEY (`CodExamen`) REFERENCES `tblexamen` (`Codigo`);
+
+--
+-- Filtros para la tabla `tblserviciosbrindados`
+--
+ALTER TABLE `tblserviciosbrindados`
+  ADD CONSTRAINT `tblserviciosbrindados_ibfk_1` FOREIGN KEY (`tipoServicio`) REFERENCES `catservicios` (`idServicio`),
+  ADD CONSTRAINT `tblserviciosbrindados_ibfk_2` FOREIGN KEY (`estadoServicio`) REFERENCES `catestadoservicios` (`idEstadoServicio`),
+  ADD CONSTRAINT `tblserviciosbrindados_ibfk_3` FOREIGN KEY (`NumeroRecibo`) REFERENCES `tblrecibosventa` (`idRecibo`);
+
+--
+-- Filtros para la tabla `tblsesion`
+--
+ALTER TABLE `tblsesion`
+  ADD CONSTRAINT `tblsesion_ibfk_1` FOREIGN KEY (`CodUsuarioSesion`) REFERENCES `tblusuarios` (`Codigo`),
+  ADD CONSTRAINT `tblsesion_ibfk_2` FOREIGN KEY (`EstadoSesion`) REFERENCES `catestado` (`ID`);
+
+--
+-- Filtros para la tabla `tblsignosvitales`
+--
+ALTER TABLE `tblsignosvitales`
+  ADD CONSTRAINT `tblsignosvitales_ibfk_1` FOREIGN KEY (`CodConsulta`) REFERENCES `tblconsulta` (`Codigo`),
+  ADD CONSTRAINT `tblsignosvitales_ibfk_2` FOREIGN KEY (`CodEnfermera`) REFERENCES `tblempleado` (`Codigo`);
+
+--
+-- Filtros para la tabla `tbltipodecambio`
+--
+ALTER TABLE `tbltipodecambio`
+  ADD CONSTRAINT `tbltipodecambio_ibfk_1` FOREIGN KEY (`aperturaCaja`) REFERENCES `tblaperturacaja` (`idApertura`),
+  ADD CONSTRAINT `tbltipodecambio_ibfk_2` FOREIGN KEY (`Moneda`) REFERENCES `catmoneda` (`idMoneda`);
+
+--
+-- Filtros para la tabla `tblusuarios`
+--
+ALTER TABLE `tblusuarios`
+  ADD CONSTRAINT `tblusuarios_ibfk_1` FOREIGN KEY (`CodPersonaU`) REFERENCES `tblpersona` (`Codigo`),
+  ADD CONSTRAINT `tblusuarios_ibfk_2` FOREIGN KEY (`Estado`) REFERENCES `catestado` (`ID`);
+
+--
+-- Filtros para la tabla `tblventasfarmacia`
+--
+ALTER TABLE `tblventasfarmacia`
+  ADD CONSTRAINT `tblventasfarmacia_ibfk_1` FOREIGN KEY (`presentacionMedicamento`) REFERENCES `catmedicamentos` (`Codigo`),
+  ADD CONSTRAINT `tblventasfarmacia_ibfk_2` FOREIGN KEY (`idServicio`) REFERENCES `tblserviciosbrindados` (`idServiciosBrindados`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+

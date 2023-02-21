@@ -1,0 +1,387 @@
+INSERT INTO catestado VALUES 
+ (1, 'Activo')
+,(2, 'Inactivo')
+,(3,'Espera')
+,(4,'Negado')
+,(5,'Abierto')
+,(6,'Cerrado');
+
+INSERT INTO catcargos VALUES
+ (1,'Enfermera','Profesional',CURRENT_DATE())
+,(2,'Doctor','Profesional',CURRENT_DATE())
+,(3,'Recepcionista','Profesional',CURRENT_DATE())
+,(4,'Cajero','Profesional',CURRENT_DATE())
+,(5,'Gerente','Profesional',CURRENT_DATE())
+,(6,'Doctor radiologico','Profesional',CURRENT_DATE())
+,(7,'Administrador','Profesional',CURRENT_DATE());
+
+INSERT INTO catconsultorio VALUES
+ (1,'Consultorio 1','Sala de consulta',CURRENT_DATE())
+,(2,'Consultorio 2','Sala de consulta',CURRENT_DATE());
+
+INSERT INTO catenfermedades VALUES 
+ (1,'Bronquitis aguda','Enfermedad comun','Respiratoria',CURRENT_DATE())
+,(2,'Resfriado común','Enfermedad comun','Respiratoria',CURRENT_DATE())
+,(3,'Influenza','Enfermedad comun','Respiratoria',CURRENT_DATE())
+,(4,'COVID 19','Enfermedad mortal','Respiratoria',CURRENT_DATE())
+,(5,'VIH','Enfermedad mortal','ITS',CURRENT_DATE())
+,(6,'SIDA','Enfermedad mortal','ITS',CURRENT_DATE())
+,(7,'Sifilis','Enfermedad mortal','ITS',CURRENT_DATE())
+,(8,'Gonorrea','Enfermedad mortal','ITS',CURRENT_DATE())
+,(9,'Evola','Enfermedad mortal','Respiratoria',CURRENT_DATE())
+,(10,'Dengue','Enfermedad mortal','Febril',CURRENT_DATE());
+
+INSERT INTO catespecialidades VALUES
+ (1,'Pediatria','Especialista',CURRENT_DATE())
+,(2,'Nutriologia','Especialista',CURRENT_DATE())
+,(3,'Cardiologia','Especialista',CURRENT_DATE())
+,(4,'Gastroenterología','Especialista',CURRENT_DATE())
+,(5,'Rinoplastia','Especialista',CURRENT_DATE());
+
+INSERT INTO catestadocita VALUES
+ (1,'Activo')
+,(2,'Inactivo');
+
+INSERT INTO catestadocivil VALUES
+ (1,'Solter@')
+,(2,'Casad@');
+
+INSERT INTO catestadoconsulta VALUES
+ (1,'Asignada')
+,(2,'En Espera')
+,(3, 'Prioridad')
+,(4,'Revertida')
+,(5,'Terminada')
+,(6,'En proceso');
+
+INSERT INTO catexamenesmedicos VALUES 
+ (1,'Radiografia',300)
+,(2,'Sangre general',100)
+,(3,'Tomografía',250)
+,(4,'Orina',50);
+
+INSERT INTO catgenero VALUES 
+ (1,'M')
+,(2,'F');
+
+INSERT INTO catgruposanguineo VALUES
+ (1,'O-')
+,(2,'O+')
+,(3,'A-')
+,(4,'A+')
+,(5,'B-')
+,(6,'B+')
+,(7,'AB-')
+,(8,'AB+');
+
+INSERT INTO catmaquinaria VALUES 
+ (1,'Esterilizadores','Equipo medico')
+,(2,'Desfibriladores','Equipo medico');
+
+INSERT INTO catmedicamentos VALUES 
+ (1,'Omeprazol','Omeprazol','','',5,10)
+,(2,'Paracetamol','Paracetamol','','',6,5)
+,(3,'Acetaminofen','Acetaminofen','','',20,20)
+,(4,'Salbutamol','Salbutamol','','',10,15)
+,(5,'Ketotifeno','Ketotifeno','','',3,30);
+
+INSERT INTO catEstadoServicios VALUES
+ (1,'Activo','Servicio activo')
+,(2,'Inactivo','Servicio inactivo');
+
+INSERT INTO catServicios VALUES
+ (1,'Examen corazon','Un examen alcorazon',500)
+,(2,'Consulta general','Una consulta general',300);
+
+INSERT INTO catMetodosDePago VALUES
+ (1,'Contado','Pago en efectivo')
+,(2,'Credito','Pago acumulado')
+,(3,'Targeta bancaria','Pago por medio de targeta bancaria');
+
+INSERT INTO catMoneda VALUES
+ (1,'Cordoba','C$','Moneda nicaraguense',1)
+,(2,'Dolar','$','Moneda estado unidence',1);
+
+INSERT INTO catCaja VALUES
+ (1,'Caja ClinicaMedica','Casa de clinica medica');
+
+INSERT INTO tblProveedores VALUES 
+(1,'Medicamentos.S.A','85746321','Ciudad jardin','medicamentossa@gmail.com',1,5,CURRENT_DATE());
+
+INSERT INTO tblComprasFarmacia VALUES 
+ (1,1,'Se compro omeprazol',CURRENT_DATE(),CURRENT_DATE())
+,(2,1,'Se compro paracetamol',CURRENT_DATE(),CURRENT_DATE())
+,(3,1,'Se compro acetaminofen',CURRENT_DATE(),CURRENT_DATE())
+,(4,1,'Se compro salbutamol',CURRENT_DATE(),CURRENT_DATE())
+,(5,1,'Se compro ketotifeno',CURRENT_DATE(),CURRENT_DATE());
+
+INSERT INTO tblDetComprasFarmacia VALUES
+ (1,1,5,10,1,'Todo bien')
+,(2,2,6,15,2,'Todo bien')
+,(3,3,20,20,3,'Todo bien')
+,(4,4,10,25,4,'Todo bien')
+,(5,5,3,30,5,'Todo bien');
+
+INSERT INTO catmodulos VALUES
+ (1,'Cita','Modulo cita')
+,(2,'Usuarios','Modulo usuarios')
+,(3,'Empleados','Modulo empleados')
+,(4,'Paciente','Modulo paciente')
+,(5,'Consulta','Modulo consulta')
+,(6,'Examen','Modulo examen')
+,(7,'Caja','Modulo caja')
+,(8,'Catalogos','Modulo catalogos')
+,(9,'Farmacia','Modulo farmacia');
+
+INSERT INTO catnivelacademico VALUES
+ (1,'Secundaria')
+,(2,'Universitario')
+,(3,'Maestria')
+,(4,'Doctorado');
+
+INSERT INTO catparentesco VALUES
+ (1,'No relación')
+,(2,'Padre')
+,(3,'Madre');
+
+INSERT INTO catprivilegio VALUES 
+ (1,'Agregar','Agregar Registros')
+,(2,'Ver', 'Ver Registros')
+,(3,'Actualizar', 'Actualizar Registros');
+
+INSERT INTO catsalaexamen VALUES
+ (1,'Sala examen 1','2x2')
+,(2,'Sala examen 2','3x3');
+
+INSERT INTO catsubmodulos VALUES
+ (1,'Cita','Submodulo Cita',1)
+,(2,'Usuarios','Submodulo Usuarios',2)
+,(3,'Empleados','Submodulo Empleados',3)
+,(4,'Especialidades','Submodulo Empleados',3)
+,(5,'Estudios Académicos','Submodulo Empleados',3)
+,(6,'Familiares Empleado','Submodulo Empleados',3)
+,(7,'Historial Cargos','Submodulo Empleados',3)
+,(8,'Paciente','Submodulo Paciente',4)
+,(9,'Antecedentes','Submodulo Paciente',4)
+,(10,'Familiares Paciente','Submodulo Paciente',4)
+,(11,'Ocupacion Paciente','Submodulo Paciente',4)
+,(12,'Consulta','Submodulo Consulta',5)
+,(13,'Signos Vitales','Submodulo Consulta',5)
+,(14,'Diagnóstico','Submodulo Consulta',5)
+,(15,'Receta Médica','Submodulo Consulta',5)
+,(16,'Receta Examen','Submodulo Consulta',5)
+,(17,'Constancia','Submodulo Consulta',5)
+,(18,'Examen','Submodulo Examen',6)
+,(19,'Resultados','Submodulo Examen',6)
+,(20,'Maquinaria Médica','Submodulo Examen',6)
+,(21,'Catalogos','Submodulo Catalogos',8)
+,(22,'SolicitudConsulta','Donde la recepcionista solicita la consulta hacia el medico.',5)
+,(23,'InventarioFarmacia','Inventario para farmacia',9)
+,(24,'ComprasFarmacia','Compras para farmacia',9)
+,(25,'VentasFarmacia','Ventas para farmacia',9)
+,(26,'DetalleCompraFarmacia','Detalle de la compra de la farmacia',9);
+
+INSERT INTO tblpersona VALUES 
+ (1,'001-091001-1001k','Steven David','Espinoza Ulloa','2001-10-09',1,1,'Bo.Jorge Dimitrov. Del colegio primero de junio 20 vrs al este MI.',88145268,'espinozasteven659@gmail.com',1,CURRENT_DATE());
+ 
+INSERT INTO tblempleado VALUES 
+(1,'111111111',CURRENT_DATE(),1);
+
+INSERT INTO tblhistorialcargos VALUES
+(1,1,7,CURRENT_DATE(),30000,1,1,1,CURRENT_DATE());
+
+INSERT INTO tblusuarios VALUES
+ (1,'ADMINISTRADOR','NjBmZHlXY2YweHVuSUg3MVkrME0zdz09',1,1,'FotosReferencia/1651552993_Violento.jpeg');
+
+INSERT INTO tblprivilegiosusuario (CodUsuario, CodPrivilegio, CodigoSubModulo) VALUES
+ (1,1,2)
+,(1,2,2)
+,(1,3,2)
+,(1,1,3)
+,(1,2,3)
+,(1,3,3)
+,(1,1,6)
+,(1,2,6)
+,(1,3,6)
+,(1,1,4)
+,(1,2,4)
+,(1,3,4)
+,(1,1,5)
+,(1,2,5)
+,(1,3,5)
+,(1,1,7)
+,(1,2,7)
+,(1,3,7)
+,(1,1,21)
+,(1,2,21)
+,(1,3,21)
+
+,(1,2,23)
+
+,(1,1,24)
+,(1,2,24)
+,(1,3,24)
+
+,(1,1,25)
+,(1,2,25)
+,(1,3,25)
+
+,(1,1,26)
+,(1,2,26)
+,(1,3,26);
+
+INSERT INTO tblpersona VALUES 
+ (2,'001-091001-1001J','Luis Manuel','Matus Ramos','2000-10-09',1,1,'Bo.Jorge Dimitrov. Del colegio primero de junio 20 vrs al este MI.',77024746,'espinozasteven658@gmail.com',1,CURRENT_DATE());
+ 
+INSERT INTO tblempleado VALUES 
+(2,'222222222',CURRENT_DATE(),2);
+
+INSERT INTO tblhistorialcargos VALUES
+(2,2,5,CURRENT_DATE(),50000,1,1,1,CURRENT_DATE());
+
+INSERT INTO tblusuarios VALUES
+ (2,'GERENTE','NjBmZHlXY2YweHVuSUg3MVkrME0zdz09',2,1,'FotosReferencia/1651553144_Luis.jpeg');
+
+INSERT INTO tblprivilegiosusuario (CodUsuario, CodPrivilegio, CodigoSubModulo) VALUES
+ (2,1,2)
+,(2,2,2)
+,(2,3,2)
+,(2,1,3)
+,(2,2,3)
+,(2,3,3)
+,(2,1,6)
+,(2,2,6)
+,(2,3,6)
+,(2,1,4)
+,(2,2,4)
+,(2,3,4)
+,(2,1,5)
+,(2,2,5)
+,(2,3,5)
+,(2,1,7)
+,(2,2,7)
+,(2,3,7)
+,(2,2,8)
+,(2,1,21)
+,(2,2,21)
+,(2,3,21);
+
+INSERT INTO tblpersona VALUES 
+(3,'001-091001-1001A','Enrique Jose','Muños Avellan','2000-10-18',1,1,'Bo.Jorge Dimitrov. Del colegio primero de junio 20 vrs al este MI.',78514269,'avellanenrique@gmail.com',1,CURRENT_DATE());
+ 
+INSERT INTO tblempleado VALUES 
+(3,'333333333',CURRENT_DATE(),3);
+
+INSERT INTO tblhistorialcargos VALUES
+(3,3,2,CURRENT_DATE(),25000,1,1,2,CURRENT_DATE());
+
+INSERT INTO tblusuarios VALUES
+(3,'DOCTOR','NjBmZHlXY2YweHVuSUg3MVkrME0zdz09',3,1,'FotosReferencia/1651553113_Enrique.jpeg');
+
+INSERT INTO tblprivilegiosusuario (CodUsuario, CodPrivilegio, CodigoSubModulo) VALUES
+ (3,2,12)
+,(3,3,12)
+,(3,2,8)
+,(3,2,1)
+,(3,1,13)
+,(3,2,13)
+,(3,3,13)
+,(3,1,14)
+,(3,2,14)
+,(3,3,14)
+,(3,1,15)
+,(3,2,15)
+,(3,1,16)
+,(3,2,16)
+,(3,1,17)
+,(3,2,17)
+,(3,2,18)
+,(3,2,19);
+
+INSERT INTO tblpersona VALUES 
+(4,'001-091001-1001B','Marcos Antonio','Duartes','2000-10-18',1,1,'Bo.Jorge Dimitrov. Del colegio primero de junio 20 vrs al este MI.',79451236,'duartesmarcos@gmail.com',1,CURRENT_DATE());
+ 
+INSERT INTO tblempleado VALUES 
+(4,'444444444',CURRENT_DATE(),4);
+
+INSERT INTO tblhistorialcargos VALUES
+(4,4,3,CURRENT_DATE(),12000,1,1,2,CURRENT_DATE());
+
+INSERT INTO tblusuarios VALUES
+(4,'RECEPCIONISTA','NjBmZHlXY2YweHVuSUg3MVkrME0zdz09',4,1,'FotosReferencia/1651553170_Marcos.jpeg');
+
+INSERT INTO tblprivilegiosusuario (CodUsuario, CodPrivilegio, CodigoSubModulo) VALUES
+ (4,1,22)
+,(4,2,22)
+,(4,3,22)
+,(4,2,12)
+,(4,3,12)
+,(4,1,8)
+,(4,2,8)
+,(4,3,8)
+,(4,1,1)
+,(4,2,1)
+,(4,3,1);
+
+INSERT INTO tblpersona VALUES 
+(5,'001-091001-1001C','Manuel Salvador','Espinoza Quiroz','2000-10-18',1,1,'Bo.Jorge Dimitrov. Del colegio primero de junio 20 vrs al este MI.',85621436,'espinozamanuel@gmail.com',1,CURRENT_DATE());
+ 
+INSERT INTO tblempleado VALUES 
+(5,'555555555',CURRENT_DATE(),5);
+
+INSERT INTO tblhistorialcargos VALUES
+(5,5,4,CURRENT_DATE(),16000,1,1,2,CURRENT_DATE());
+
+INSERT INTO tblusuarios VALUES
+(5,'Cajero','NjBmZHlXY2YweHVuSUg3MVkrME0zdz09',5,1,'FotosReferencia/1651553190_Salva.jpeg');
+
+INSERT INTO tblprivilegiosusuario (CodUsuario, CodPrivilegio, CodigoSubModulo) VALUES
+ (5,2,12)
+,(5,2,8)
+,(5,2,18)
+,(5,2,19);
+
+INSERT INTO tblpersona VALUES 
+(6,'001-091001-1001D','Stayci yahoska','Ramirez Zeledon','2000-10-18',1,1,'Bo.Jorge Dimitrov. Del colegio primero de junio 20 vrs al este MI.',81247569,'zeledonstayci@gmail.com',1,CURRENT_DATE());
+ 
+INSERT INTO tblempleado VALUES 
+(6,'666666666',CURRENT_DATE(),6);
+
+INSERT INTO tblhistorialcargos VALUES
+(6,6,1,CURRENT_DATE(),15000,1,1,2,CURRENT_DATE());
+
+INSERT INTO tblusuarios VALUES
+(6,'ENFERMERA','NjBmZHlXY2YweHVuSUg3MVkrME0zdz09',6,1,null);
+
+INSERT INTO tblprivilegiosusuario (CodUsuario, CodPrivilegio, CodigoSubModulo) VALUES
+ (6,2,12)
+,(6,1,13)
+,(6,2,13)
+,(6,3,13)
+,(6,2,8);
+
+INSERT INTO tblpersona VALUES 
+(7,'001-091001-1001E','Felipe David','Treminio Moreno','2000-10-18',1,1,'Bo.Jorge Dimitrov. Del colegio primero de junio 20 vrs al este MI.',72157863,'morenofelipe@gmail.com',1,CURRENT_DATE());
+ 
+INSERT INTO tblempleado VALUES 
+(7,'777777777',CURRENT_DATE(),7);
+
+INSERT INTO tblhistorialcargos VALUES
+(7,7,6,CURRENT_DATE(),28000,1,1,2,CURRENT_DATE());
+
+INSERT INTO tblusuarios VALUES
+(7,'DOCTORR','NjBmZHlXY2YweHVuSUg3MVkrME0zdz09',7,1,null);
+
+INSERT INTO tblprivilegiosusuario (CodUsuario, CodPrivilegio, CodigoSubModulo) VALUES
+ (7,1,18)
+,(7,2,18)
+,(7,3,18)
+,(7,1,19)
+,(7,2,19)
+,(7,2,8);
+
+INSERT INTO tblAperturaCaja VALUES
+ (1,1,100000,5,CURRENT_DATE(),null,5);
+
+INSERT INTO tblTipoDeCambio VALUES
+ (1,2,35.5,1);

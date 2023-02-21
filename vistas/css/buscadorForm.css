@@ -1,0 +1,143 @@
+/*Para las busquedas en consulta*/
+.lista-autocompletar-items{
+	color: rgb(114, 114, 114);
+	position: absolute;
+	border: 1 px solid #d4d4d4;
+	border-bottom: none;
+	z-index: 99;
+	/*
+	top:100%;
+	left: 20px;
+	right: 0;
+	width: 93%;*/
+}
+
+.lista-autocompletar-items div{
+	padding: 10px;
+	cursor: pointer;
+	background-color: 1px solid #d4d4d4;
+
+	}
+
+
+.lista-autocompletar-items div:hover{
+	background-color: dodgerblue;
+	
+	}
+
+.autocompletar-active{
+	background-color: dodgerblue;
+	color: #a1caff;
+}
+
+.autocompletar-active strong{
+	color: #fff;
+}
+
+/*************************************************************/
+.autocompletar{
+    position: relative;
+    display: inline-block;
+    width: 100% !important;
+}
+
+strong{
+    color: black;
+}
+/*
+#tipo-mascota{
+    background-color: #eee;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.7em;
+    padding: 10px 25px;
+    outline: none;
+    width: 500px;
+}*/
+
+.lista-autocompletar-items{
+    color: rgb(114, 114, 114);
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    z-index: 99;
+/*
+    top: 100%;
+    left: 20px;
+    right: 0;
+    width: 93%;*/
+}
+
+.lista-autocompletar-items div{
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+}
+
+.lista-autocompletar-items div:hover{
+    background-color: dodgerblue;
+}
+
+.autocompletar-active{
+    background-color: dodgerblue !important;
+    color: #a1caff;
+}
+.autocompletar-active strong{
+    color: #fff;
+}
+/*
+#consulta_paciente_reg {
+    width: 557px;
+}*/
+
+.inputauto2 {/*Agregar esta clase a los inputs que se hagan autocompletados*/
+    width: 557px;
+}
+
+/*PARA LOS TITULOS DE LOS TEXTBOX DE LOS PRIVILEGIOS*/
+@media(max-width: 576px) {
+    .titulo-tb{
+        font-size: 15.5px;
+    }
+    }
+
+    .lblCombo {/*Este es para los campos combobox(fijarse en consulta-new)*/
+        font-size: 135%;
+    }
+
+.Obligar {/*Para los campos que si o si deben rellenarse pponer asterisco rojo(fijarse en consulta-new)*/
+    color: rgb(192, 0, 0);
+    font-size: 120%;
+}
+
+input[type=checkbox] {
+    transform: scale(1.7);/*Hacer mas grandes los checkbox*/
+    margin-right: 1%;/*Darle mas espacio para que el texto no se mire pegado*/
+  }
+
+span.bmd-form-group {
+    padding-top: 0px !important;
+}
+
+#tfootCaja{
+    color: black;
+}
+
+.inputSinEstilo {
+    /* width:270px;  */
+    background-color: transparent; 
+    border:none; 
+    outline:0; 
+    text-align: center;
+    /* font-family:Arial, Helvetica, sans-serif;  */
+    /* margin:0; 
+    padding:0;  */
+}
+
+.formSinEstilo {
+    border:none; 
+    outline:0;
+    padding: 0;
+}
+

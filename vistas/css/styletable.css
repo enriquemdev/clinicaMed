@@ -1,0 +1,13 @@
+.title{
+    padding: 25px;
+    margin: 10px;
+}
+.textarea1{
+    width: 100%;
+    height: 150px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    background-color: #f8f8f8;
+    resize: none;
+}   
